@@ -3,7 +3,6 @@ package com.example.paintassignment;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -19,14 +18,14 @@ public class PaintView extends View implements View.OnTouchListener{
 
     class PaintCoordinate
     {
-        PointF pt;
         float radius;
         float x;
         float y;
         int colour;
-        public PaintCoordinate(float x, float y, int colour){
+        PaintCoordinate(float x, float y, float radius, int colour){
             this.x = x;
             this.y = y;
+            this.radius = radius;
             this.colour = colour;
         }
     }
@@ -59,17 +58,8 @@ public class PaintView extends View implements View.OnTouchListener{
     {
         setOnTouchListener(this);
     }
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
 
-        for(PaintCoordinate pc : points) {
-            paint.setColor(pc.colour);
-            canvas.drawCircle(pc.x, pc.y,pc.radius, paint);
-        }
-    }
-
-   public void onClickUndo () {
+    public void onClickUndo () {
         if (points.size()>0)
         {
             undonePoints.add(points.remove(points.size()-1));
@@ -86,15 +76,46 @@ public class PaintView extends View implements View.OnTouchListener{
     }
 
     @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw ( canvas );
+
+        for(PaintCoordinate pc : points) {
+           paint.setColor(pc.colour);
+         canvas.drawCircle(pc.x, pc.y,pc.radius, paint);
+        }
+    }
+
+    @Override
     public boolean onTouch(View view, MotionEvent me) {
-        PaintCoordinate pc = new PaintCoordinate(me.getX(), me.getY(), random.nextInt());
 
-        PointF pt = new PointF();
-        pt.set(me.getX(), me.getY());
+        int pointerCount = me.getPointerCount();
 
-        pc.pt = pt;
-        pc.radius = radius;
-        points.add(pc);
+        for (int i = 0; i < pointerCount; i++) {
+            float x = me.getX ( i );
+            float y = me.getY ( i );
+            int id = me.getPointerId ( i );
+
+            if(id == 0){
+                PaintCoordinate pc = new PaintCoordinate (x, y, radius, random.nextInt());
+                points.add(pc);
+            }
+            if(id == 1){
+                PaintCoordinate pc = new PaintCoordinate (x, y, radius, random.nextInt());
+                points.add((pc));
+            }
+            if(id == 2){
+                PaintCoordinate pc = new PaintCoordinate (x, y, radius, random.nextInt());
+                points.add((pc));
+            }
+            if(id == 3){
+                PaintCoordinate pc = new PaintCoordinate (x, y, radius, random.nextInt());
+                points.add((pc));
+            }
+            if(id == 4){
+                PaintCoordinate pc = new PaintCoordinate (x, y, radius, random.nextInt());
+                points.add((pc));
+            }
+        }
 
         invalidate();
 
